@@ -34,7 +34,7 @@ class Classifier(nn.Module):
             nn.MaxPool2d(2, 2, 0),  # [512, 4, 4]
         )
         self.fc = nn.Sequential(
-            nn.Linear(512 * 4 * 4, 1024),
+            nn.Linear(512 * 4 * 4 , 1024),
             nn.ReLU(),
             nn.Linear(1024, 512),
             nn.ReLU(),

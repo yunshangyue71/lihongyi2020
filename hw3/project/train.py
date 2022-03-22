@@ -4,16 +4,18 @@ from torch.optim import lr_scheduler
 
 from torch.utils.data import DataLoader
 import time
-
+from model.base import Classifier
 from project.dataset.dataset import ImgDataset
 from model.ResNet import *
 from project.loss import loss, focal_loss
 
 class Train():
     def __init__(self):
-        self.batch_size = 64
+        self.batch_size = 8
         self.num_epoch = 500
-        self.wh = (256,256)
+        self.wh = (256, 256)
+        self.wh_v = (256, 256) #(224,224)
+        self.lr = 1e-4
 
     def get_model(self):
         # model = Classifier().cuda()
@@ -21,7 +23,7 @@ class Train():
         return model
 
     def get_optimizer(self, model):
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)  # optimizer 使用 Adam
+        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr)  # optimizer 使用 Adam
         return optimizer
 
     def save(self, model, path):
@@ -31,7 +33,7 @@ class Train():
 
     def load(self, path):
         # 模型加载
-        # model = torch.load('model.pkl')
+        model = torch.load('model.pkl')
         model = torch.load(path)
         return model
 
@@ -51,7 +53,7 @@ class Train():
         workspace_dir = root + 'data/food-11/'
 
         train_data = ImgDataset(workspace_dir + "training/", wh=self.wh, mode="train")
-        val_data = ImgDataset(workspace_dir + "validation/",wh= (224,224),  mode = "val")
+        val_data = ImgDataset(workspace_dir + "validation/",wh= self.wh_v,  mode = "val")
         train_loader = DataLoader(train_data,  batch_size=self.batch_size, shuffle=True, num_workers=8, pin_memory=True)
         val_loader = DataLoader(val_data,  batch_size=self.batch_size, shuffle=False, num_workers=8, pin_memory=True)
 
@@ -63,7 +65,7 @@ class Train():
 
         train_loader, val_loader, train_num, val_num = self.get_data()
 
-        model = self.load2(model,  os.getcwd()+"/.model_dropout.pkl")
+        # model = self.load2(model,  os.getcwd()+"/.model_dropout.pkl")
         for epoch in range(self.num_epoch):
             epoch_start_time = time.time()
             train_acc = 0.0
@@ -80,10 +82,11 @@ class Train():
                 train_pred = model(data[0].cuda())  # 利用 model 得到預測的機率分佈 這邊實際上就是去呼叫 model 的 forward 函數
 
                 # cal loss
-                # cross_loss = loss.cross_entropy(train_pred, data[1].cuda())  # 計算 loss （注意 prediction 跟 label 必須同時在 CPU 或是 GPU 上）
-                fl = focal_loss.floss(train_pred, data[1].cuda())
+                cross_loss = loss.cross_entropy(train_pred, data[1].cuda())  # 計算 loss （注意 prediction 跟 label 必須同時在 CPU 或是 GPU 上）
+                # fl = focal_loss.floss(train_pred, data[1].cuda())
                 l2_loss = loss.L2(model) * 1e-6
-                batch_loss = l2_loss + fl
+                # batch_loss =  fl
+                batch_loss = cross_loss + l2_loss
                 batch_loss.backward()  # 利用 back propagation 算出每個參數的 gradient
                 optimizer.step()  # 以 optimizer 用 gradient 更新參數值
 
@@ -91,15 +94,17 @@ class Train():
                 train_acc += np.sum(np.argmax(train_pred.cpu().data.numpy(), axis=1) == data[1].numpy())
                 train_loss += batch_loss.item()
             if epoch+1 > 0 and (epoch+1) % 10 == 0:
-                self.save2(model, ".model_dropout_"+str(epoch)+".pkl")
+                self.save2(model, ".model_dropout.pkl")
             model.eval()
             with torch.no_grad():
                 for i, data in enumerate(val_loader):
                     val_pred = model(data[0].cuda())
-                    # cross_loss = loss.cross_entropy(val_pred, data[1].cuda())
-                    fl = focal_loss.floss(val_pred, data[1].cuda())
+                    cross_loss = loss.cross_entropy(val_pred, data[1].cuda())
+                    # if (data[1] >= 11).sum() > 0:
+                    #     print()
+                    # fl = focal_loss.floss(val_pred, data[1].cuda())
                     l2_loss = loss.L2(model) * 3e-5
-                    batch_loss =  l2_loss + fl
+                    batch_loss = cross_loss + l2_loss
                     val_tf = np.argmax(val_pred.cpu().data.numpy(), axis=1) == data[1].numpy()
                     val_confuse = np.argmax(val_pred.cpu().data.numpy(), axis=1)
                     ls = list(data[1].numpy())

@@ -11,7 +11,10 @@ def L1( model):
 def L2(model):
     loss = 0
     for param in model.parameters():
-        loss += torch.sum(param ** 2)
+        try:
+            loss += torch.sum(param ** 2)
+        except:
+            print()
     return loss
 
 
