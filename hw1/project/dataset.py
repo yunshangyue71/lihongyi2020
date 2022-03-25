@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 class Path(object):
     def __init__(self):
-        self.root = "/media/q/data/lihongyi_2020_/hw1/"
+        self.root = "/media/q/data/lihongyi2020/hw1/"
         self.data_root = self.root + "data/"
         self.model_root = self.root + "model/"
 

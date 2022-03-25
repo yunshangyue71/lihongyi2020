@@ -42,21 +42,22 @@ def train( x, y, xv, yv):
     for t in range(iter_time):
         # np.dot矩阵点积, power:x^y
         train_loss = np.sqrt(np.sum(np.power(np.dot(x, w) - y, 2)) / y.shape[0])  # rmse标准差
+        train_loss += np.sqrt((w * w).sum()) * 1e-4
         # 每进行100次迭代, 输出loss值
 
         # transpose矩阵转置
         gradient = 2 * np.dot(x.transpose(), np.dot(x, w) - y)  # dim*1
-        adagrad += gradient ** 2
+        adagrad += gradient ** 2 + 1e-4
         w = w - learning_rate * gradient / np.sqrt(adagrad + eps)
         if t % 1000== 0 and t > 18000:
             val_loss = np.sqrt(np.sum(np.power(np.dot(xv, w) - yv, 2)) / yv.shape[0])
             print(t, "train_loss: %2.4f, val_loss: %2.4f  "% (train_loss, val_loss))
-    cc = w[-1]
-    w = w.reshape(-1)[:-1].reshape(18, 9)
-    w = np.abs(w)
-    for i in range(w.shape[0]):
-        print(i, np.sum(w[i]), "\n", w[i])
-    print(cc)
+    # cc = w[-1]
+    # w = w.reshape(-1)[:-1].reshape(18, 9)
+    # w = np.abs(w)
+    # for i in range(w.shape[0]):
+    #     print("## ", i, np.sum(w[i]), "  \n", w[i])
+    # print(cc)
 
     # print("./*100")
     # print(w.reshape(-1)[:-1].reshape(9, 18).T, w[-1])
@@ -90,28 +91,21 @@ if __name__ == '__main__':
 
     #测试的时候，可以利用的信息，是前面9个小时所有污染物的指标，所以训练的时候模拟的是前9个小时，所有污染物的指标
     raw_data = dataset.get_rawdata()
-    x,y = data = dataset.prepro_data(raw_data)
-    x, mean, std = dataset.normalize(x)
-    x_train_set,y_train_set,x_validation,y_validation = dataset.split_data(x, y)
+    # x,y = data = dataset.prepro_data(raw_data)
+    # x, mean, std = dataset.normalize(x)
+    # x_train_set,y_train_set,x_validation,y_validation = dataset.split_data(x, y)
 
-    train(x_train_set, y_train_set, x_validation, y_validation)
+    # train(x_train_set, y_train_set, x_validation, y_validation)
 
     # 仅仅利用前9个小时的pm2.5
-    # for m in range(18):
-    #     print(m)
-    #     x, y = data = dataset.prepro_data_pm(raw_data, m)
-    #
-    #     # #自己的方法
-    #     # raw_data = dataset.get_rawdata_me()
-    #     # x, y = data = dataset.prepare_data_me(raw_data)
-    #     #
-    #     # # raw_data = dataset.get_rawdata()
-    #     # # x, y = data = dataset.prepro_data(raw_data)
-    #
-    #     x, mean, std = dataset.normalize(x)
-    #     x_train_set,y_train_set,x_validation,y_validation = dataset.split_data(x, y)
-    #
-    #     train(x_train_set, y_train_set, x_validation, y_validation)
+    for m in range(18):
+        print(m)
+        x, y = data = dataset.prepro_data_pm(raw_data, m)
+
+        x, mean, std = dataset.normalize(x)
+        x_train_set,y_train_set,x_validation,y_validation = dataset.split_data(x, y)
+
+        train(x_train_set, y_train_set, x_validation, y_validation)
 
     # dataset = DatasetTest(mean, std)
     # raw_data_test = dataset.get_rawdata()
