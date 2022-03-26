@@ -8,21 +8,23 @@ import time
 from model.base import Classifier
 from project.dataset.dataset import ImgDataset
 from model.ResNet import *
-# from model.base_hw7 import *
+from model.base_hw7 import *
 from project.loss import loss, focal_loss
+from torchsummary import summary
 
 class Train():
     def __init__(self):
-        self.batch_size = 64
+        self.batch_size = 160
         self.num_epoch = 500
         self.wh = (256, 256)
         self.wh_v = (256, 256) #(224,224)
         self.lr = 1e-6
+        self.print_model_size = 0
 
     def get_model(self):
         # model = Classifier().cuda()
-        model = ResNet(ResnetBasic, [2, 2, 2, 2]).cuda()
-        # model = StudentNet()
+        # model = ResNet(ResnetBasic, [2, 2, 2, 2]).cuda()
+        model = StudentNet().cuda()
         return model
 
     def get_optimizer(self, model):
@@ -68,7 +70,10 @@ class Train():
 
         train_loader, val_loader, train_num, val_num = self.get_data()
 
-        model = self.load2(model,  "model_resnet18_fc4.pkl")
+        model = self.load2(model,  "ckpt/model_base_deepwise_4M.pkl")
+        if self.print_model_size:
+            summary(model=model, batch_size=1, input_size=(3, self.wh[0], self.wh[1]))
+            return 0
         for epoch in range(self.num_epoch):
             epoch_start_time = time.time()
             train_acc = 0.0
@@ -97,7 +102,7 @@ class Train():
                 train_acc += np.sum(np.argmax(train_pred.cpu().data.numpy(), axis=1) == data[1].numpy())
                 train_loss += batch_loss.item()
             if epoch+1 > 0 and (epoch+1) % 10 == 0:
-                self.save2(model, "model_resnet18_fc4.pkl")
+                self.save2(model, "ckpt/model_base_deepwise_4M.pkl")
             model.eval()
             with torch.no_grad():
                 for i, data in enumerate(val_loader):
