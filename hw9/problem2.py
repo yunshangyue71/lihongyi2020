@@ -51,36 +51,30 @@ for i, img in enumerate(imgs):
     plt.imshow(img)
 
 
-# img_dataloader = DataLoader(img_dataset, batch_size= 6, shuffle=False)
-# for data in img_dataloader:
-#     img = data
-#     img = img.cuda()
-#
-#     output1, recs = model(img)
-#     break
 
 # # 畫出 reconstruct 的圖
-inp = torch.Tensor(trainX_preprocessed[indexes,]).cuda()
-# inp_ = []
-# for  i in range(inp.shape[0]):
-#     a = transforms.ToPILImage()(inp[i])
-#     a = transforms.ToTensor()(a)
-#     # a = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(a)
-#     a = torch.unsqueeze(a, 0)
-#     inp_.append(a)
-# inp_ = torch.vstack(inp_)
-# inp_ = inp_.cuda()
-#
-#
-latents, recs = model(inp)
+inp = trainX_preprocessed[indexes,]
+inp_ = []
+for  i in range(inp.shape[0]):
+    a = inp[i].astype(np.uint8)
+    a = transforms.ToPILImage()(a)
+    a = transforms.ToTensor()(a)
+    # a = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])(a)
+    a = torch.unsqueeze(a, 0)
+    inp_.append(a)
+inp_ = torch.vstack(inp_)
+inp_ = inp_.cuda()
+
+
+latents, recs = model(inp_)
 unorm = UnNormalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
 # unorm = UnNormalize(mean=(0.406, 0.456, 0.485), std=(0.225, 0.224,0.229))
 
 # for i in range(recs.shape[0]):
 #     recs[i] = unorm(recs[i])
 # recs = recs * 255.0
-recs = ((recs + 1) / 2).cpu().detach().numpy()
-# recs = recs.cpu().detach().numpy()
+# recs = ((recs + 1) / 2).cpu().detach().numpy()
+recs = recs.cpu().detach().numpy()
 recs = recs.transpose(0, 2, 3, 1)
 
 for i, img in enumerate(recs):

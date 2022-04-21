@@ -14,8 +14,8 @@ def preprocess(image_list):
       image_list: List of images (9000, 3, 32, 32)
     """
     image_list = np.array(image_list)
-    image_list = np.transpose(image_list, (0, 3, 1, 2))
-    image_list = (image_list / 255.0) * 2 - 1
+    # image_list = np.transpose(image_list, (0, 3, 1, 2))
+    # image_list = (image_list / 255.0) * 2 - 1
     image_list = image_list.astype(np.float32)
     return image_list
 
@@ -48,14 +48,12 @@ class Image_Dataset(Dataset):
 
     def __getitem__(self, idx):
         images = self.image_list[idx]
-        images = torch.from_numpy(images)
-        # images = images / 255.0#self.__train_aug()(images)
+        images = images.astype(np.uint8)
+        images = self.__train_aug()(images)
         return images
 
 
 trainX = np.load(root  + 'trainX.npy')
-# trainX_mean = np.mean(trainX, axis=0)
-# trainX = trainX - trainX_mean
 trainX_preprocessed = preprocess(trainX)
 img_dataset = Image_Dataset(trainX_preprocessed)
 

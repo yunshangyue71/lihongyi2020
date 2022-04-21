@@ -11,7 +11,7 @@
 |---| ---| ---|--- | ---- | ---- |
 |baseline 0|-|-|![p1](image_saved/0/p1.png)|![p1](image_saved/0/p2.png)|![p1](image_saved/0/p3.png)||
 |1|加上了BN|epoch [100/100], loss:5.06923|![p1](image_saved/1/p1.png)|  ![p2](image_saved/1/p2.png)|![ma](image_saved/1/p3.png)
-
+|2|[-1,1]->[0,1]的normalization 效果差了一些|-|0.649 ![p1](image_saved/2/p1.png)| ![p1](image_saved/2/p2.png)|![p1](image_saved/2/p3.png)|
 
 
 
