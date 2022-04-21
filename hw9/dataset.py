@@ -32,6 +32,7 @@ class Image_Dataset(Dataset):
             transforms.ToPILImage(),
 
             # transforms.RandomHorizontalFlip(),
+            # transforms.RandomVerticalFlip(),
             # transforms.RandomAffine(degrees=30,  # 旋转
             #                         scale=(0.8, 1),
             #                         shear=(20, 20),  # -20 20

@@ -10,7 +10,7 @@ same_seeds(0)
 
 model = AE().cuda()
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-5, weight_decay=1e-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
 
 model.train()
 n_epoch = 100

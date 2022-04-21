@@ -20,7 +20,8 @@ valY = np.load(root + 'valY.npy')
 #  report 請同學另外還要再畫一張 improved model 的圖。
 # ==============================================
 model = AE().cuda()
-model.load_state_dict(torch.load(root +  'ckpt/' + func +  'last_checkpoint.pth'))
+# model.load_state_dict(torch.load(root +  'ckpt/' + func +  'last_checkpoint.pth'))
+model.load_state_dict(torch.load(root +  'ckpt/' + "8/"+  'checkpoint_80.pth'))
 model.eval()
 latents = inference(valX, model)
 pred_from_latent, emb_from_latent = predict(latents)

@@ -15,7 +15,8 @@ trainX = np.load(root  + 'trainX.npy')
 trainX_preprocessed = preprocess(trainX)
 img_dataset = Image_Dataset(trainX_preprocessed)
 model = AE().cuda()
-model.load_state_dict(torch.load(root + 'ckpt/' + func + 'last_checkpoint.pth'))
+# model.load_state_dict(torch.load(root + 'ckpt/' + func + 'last_checkpoint.pth'))
+model.load_state_dict(torch.load(root +  'ckpt/' + func +  'checkpoint_80.pth'))
 model.eval()
 
 
