@@ -18,7 +18,6 @@
 |5-6|模型增大一倍 这个数据丢掉了 数据增强去掉了不小心|-|0.8![p1](image_saved/6/p1.png)| ![p1](image_saved/6/p2.png)|![p1](image_saved/7/p3.png)|
 |6-7 实际是6|之前的laten code 是（256，4，4） 改为（256，1，1）数据增强去掉了不小心|-|0.786 ![p1](image_saved/6/p1.png)| ![p1](image_saved/6/p2.png)|![p1](image_saved/6/p3.png)|
 |6-7 |翻卷集全部用stride=1 增加全局信息 并加上数据增强 维度太小学不出来了|-|0.794 ![p1](image_saved/7/p1.png)| ![p1](image_saved/7/p2.png)|![p1](image_saved/7/p3.png)|
-
 |8|模型增大一倍 code（256，4，4） +数据增强|-|0.794 ![p1](image_saved/8/p1.png)| ![p1](image_saved/8/p2.png)|![p1](image_saved/8/p3.png)|
 |9|8的模型，然后调节PCA 和TSNE 效果反而降低了
 laten code的维度大小要调试可以比原始数据多， 数据增强肯定要， 模型大小也需要
